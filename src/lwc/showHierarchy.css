@@ -1,0 +1,54 @@
+/* hierarchyTreeChart.css */
+
+/* Chart Container Styles */
+.chart-container {
+    border: 1px solid #d8dde6;
+    border-radius: 4px;
+    overflow: scroll;
+    background: #fafaf9;
+    position: relative;
+    min-height: 400px;
+    padding-left: 5px; /* Add left padding to give space for root node text */
+}
+
+.chart-container svg {
+    background: #ffffff;
+    border-radius: 4px;
+    overflow: visible; /* Allow content to extend beyond SVG bounds */
+}
+
+/* Legend Styles */
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.legend-circle {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 2px solid #333;
+}
+
+.legend-circle--expandable {
+    background-color: #ff6b6b;
+}
+
+.legend-circle--object {
+    background-color: #9c88ff;
+}
+
+.legend-circle--leaf {
+    background-color: #4ecdc4;
+}
+
+/* Loading State */
+.slds-align_absolute-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

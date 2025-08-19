@@ -1,0 +1,151 @@
+<!-- hierarchyTreeChart.html -->
+<template>
+    <lightning-card title="Hierarchy Tree Chart" icon-name="utility:hierarchy">
+        <div class="slds-p-around_medium">
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <div class="slds-align_absolute-center slds-p-around_large">
+                    <lightning-spinner alternative-text="Loading hierarchy data..." size="medium">
+                    </lightning-spinner>
+                    <p class="slds-text-heading_small slds-m-top_medium">
+                        Loading hierarchy data...
+                    </p>
+                </div>
+            </template>
+
+            <!-- Error State -->
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                    <span class="slds-assistive-text">Error</span>
+                    <lightning-icon icon-name="utility:error" alternative-text="Error" size="small"
+                        class="slds-m-right_x-small">
+                    </lightning-icon>
+                    <h2 class="slds-text-heading_small">{error}</h2>
+                </div>
+            </template>
+
+            <!-- Chart Container -->
+            <template if:false={isLoading}>
+                <template if:false={error}>
+                    <!-- Chart Controls -->
+                    <div class="slds-grid slds-gutters slds-wrap slds-m-bottom_medium">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-button-group>
+                                <lightning-button label="Refresh" icon-name="utility:refresh" onclick={refreshChart}
+                                    title="Refresh hierarchy data">
+                                </lightning-button>
+
+                                <lightning-button label="Expand All" icon-name="utility:expand_all" onclick={expandAll}
+                                    title="Expand all nodes">
+                                </lightning-button>
+
+                                <lightning-button label="Collapse All" icon-name="utility:collapse_all"
+                                    onclick={collapseAll} title="Collapse all nodes">
+                                </lightning-button>
+                            </lightning-button-group>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-text-align_right">
+                            <lightning-button label="Export SVG" icon-name="utility:download" onclick={handleExport}
+                                variant="brand" title="Export chart as SVG">
+                            </lightning-button>
+                        </div>
+                    </div>
+
+                    <!-- Chart Area -->
+                    <div class="chart-container" style={chartContainerStyle}>
+                        <!-- D3 chart will be rendered here -->
+                    </div>
+
+                    <!-- Legend and Instructions -->
+                    <div class="slds-grid slds-gutters slds-m-top_medium">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3">
+                            <div class="slds-box slds-box_x-small slds-theme_shade">
+                                <h3 class="slds-text-heading_x-small slds-m-bottom_x-small">
+                                    Instructions:
+                                </h3>
+                                <ul class="slds-list_dotted slds-text-body_small">
+                                    <li><strong>Export:</strong> Download the visualization as an SVG file.</li>
+                                    <li><strong>Zoom:</strong> Scroll with the mouse wheel to zoom in or out.</li>
+                                    <li><strong>Tree Controls:</strong> Use the controls to refresh, expand and collapse the entire tree.
+                                    </li>
+                                    <li><strong>Expand/Collapse:</strong> Click red nodes to show or hide their child
+                                        nodes.</li>
+                                    <li><strong>Blue Nodes:</strong> Represent expanded records or leaf nodes.</li>
+                                    <li><strong>Navigate Records:</strong> Click a node’s label to view its record
+                                        details.</li>
+                                    <li><strong>Object Details:</strong> Click an object node to display its record.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="slds-box slds-box_x-small slds-theme_shade">
+                                <h3 class="slds-text-heading_x-small slds-m-bottom_x-small">
+                                    Legend
+                                </h3>
+                                <div class="slds-grid slds-gutters_xx-small slds-text-body_small">
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <div class="legend-item">
+                                            <span class="legend-circle legend-circle--expandable"></span>
+                                            <span>Has Children</span>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <div class="legend-item">
+                                            <span class="legend-circle legend-circle--leaf"></span>
+                                            <span>Leaf Node</span>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <div class="legend-item">
+                                            <span class="legend-circle legend-circle--object"></span>
+                                            <span>Object Node</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Statistics -->
+                    <template if:true={hierarchyData}>
+                        <div class="slds-m-top_medium">
+                            <lightning-card title="Hierarchy Statistics" icon-name="utility:chart">
+                                <div class="slds-p-horizontal_medium slds-p-vertical_small">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-3 slds-text-align_center">
+                                            <div class="slds-text-heading_medium slds-text-color_success">
+                                                {maxLevels}
+                                            </div>
+                                            <div class="slds-text-body_small slds-text-color_weak">
+                                                Max Levels
+                                            </div>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3 slds-text-align_center">
+                                            <div class="slds-text-heading_medium slds-text-color_default">
+                                                {record}
+                                            </div>
+                                            <div class="slds-text-body_small slds-text-color_weak">
+                                                Root Record
+                                            </div>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-3 slds-text-align_center">
+                                            <div class="slds-text-heading_medium slds-text-color_default">
+                                                {objectLabel}
+                                            </div>
+                                            <div class="slds-text-body_small slds-text-color_weak">
+                                                Object Type
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </lightning-card>
+                        </div>
+                    </template>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,23 @@
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property name="maxLevels" type="Integer" default="5" 
+                      label="Maximum Hierarchy Levels" 
+                      description="Maximum number of hierarchy levels to display"/>
+            <property name="width" type="Integer" default="1024" 
+                      label="Chart Width" 
+                      description="Width of the chart in pixels"/>
+            <property name="height" type="Integer" default="800" 
+                      label="Chart Height" 
+                      description="Height of the chart in pixels"/>
+            <property name="nodeRadius" type="Integer" default="10" 
+                      label="Node Radius" 
+                      description="Radius of the tree nodes in pixels"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
