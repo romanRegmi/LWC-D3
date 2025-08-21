@@ -13,8 +13,8 @@ export default class ShowHierarchy extends LightningElement {
     @api height;
     @api nodeRadius;
     @api maxLevels;
-
-
+    
+    minNodeSpacing = 10; // Minimum vertical spacing between nodes
     hierarchyData = null;
     processedHierarchyData = null;
     isLoading = true;
@@ -23,7 +23,6 @@ export default class ShowHierarchy extends LightningElement {
 
     d3Initialized = false;
     svg = null;
-    treeLayout = null;
     root = null;
 
     objectLabel;
@@ -92,14 +91,12 @@ export default class ShowHierarchy extends LightningElement {
         container.innerHTML = '';
 
         // Calculate dynamic height based on number of nodes
-        const totalNodes = this.countTotalNodes(this.hierarchyData);
-        const minNodeSpacing = 10; // Minimum vertical spacing between nodes
-        const dynamicHeight = Math.max(this.height, totalNodes * minNodeSpacing);
+        const visibleNodeCount = this.countVisibleNodes(this.root);        
+        const calculatedHeight = this.height + visibleNodeCount * this.minNodeSpacing; 
 
         // Set up dimensions and margins
         const margin = { top: 20, right: 90, bottom: 30, left: 50 };
-        const width = this.width - margin.left - margin.right;
-        const height = dynamicHeight - margin.top - margin.bottom;
+        this.width = this.width - margin.left - margin.right;
 
         // Create SVG with zoom and pan functionality
         this.svg = d3.select(container)
@@ -116,7 +113,7 @@ export default class ShowHierarchy extends LightningElement {
             .attr('transform', `translate(${margin.left},${margin.top})`);
 
         // Create tree layout with dynamic sizing
-        this.treeLayout = d3.tree().size([height, width]);
+        d3.tree().size([calculatedHeight, width]);
 
         // Convert hierarchy data to d3 hierarchy
         this.root = d3.hierarchy(this.hierarchyData, d => d.children);
@@ -135,15 +132,19 @@ export default class ShowHierarchy extends LightningElement {
         this.update(this.root, g);
     }
 
-    // Helper method to count total visible nodes
-    countTotalNodes(node) {
+    //Method to count only visible (expanded) nodes
+    countVisibleNodes(node) {
         if (!node) return 0;
-        let count = 1;
+
+        let count = 1; // Count the current node
+
+        // Only count children if they are visible (node.children exists, not node._children)
         if (node.children) {
             node.children.forEach(child => {
-                count += this.countTotalNodes(child);
+                count += this.countVisibleNodes(child);
             });
         }
+
         return count;
     }
 
@@ -156,7 +157,14 @@ export default class ShowHierarchy extends LightningElement {
     }
 
     update(source, g) {
-        const treeData = this.treeLayout(this.root);
+        const visibleNodeCount = this.countVisibleNodes(this.root);
+        const newHeight = this.height + visibleNodeCount * this.minNodeSpacing;
+        // Update tree layout size if height changed significantly
+        const calculatedHeight = this.height + visibleNodeCount * this.minNodeSpacing; 
+        const treeLayout = d3.tree().size([calculatedHeight, this.width])
+        const treeData = treeLayout(this.root);
+        
+        
         const nodes = treeData.descendants();
         const links = treeData.descendants().slice(1);
 
@@ -324,7 +332,7 @@ export default class ShowHierarchy extends LightningElement {
 
     // Get node color based on type and state
     getNodeColor(d) {
-        if(d.depth === 0){
+        if (d.depth === 0) {
             return '#FFD700';
         }
         if (d.data.isObjectGroup) {
