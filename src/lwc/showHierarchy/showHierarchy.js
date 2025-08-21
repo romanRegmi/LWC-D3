@@ -125,7 +125,7 @@ export default class ShowHierarchy extends LightningElement {
 
         // Collapse all nodes initially except root
         try {
-            this.record = this.root.data.name;
+            this.record = this.root.data.label;
             this.root.children.forEach(this.collapse);
         } catch {
             // Skip if the record has no child records
@@ -195,9 +195,9 @@ export default class ShowHierarchy extends LightningElement {
                 }
             })
             .text(d => {
-                const name = d.data.name;
+                const label = d.data.label;
                 const maxLength = d.depth === 0 ? 25 : 20;
-                return name.length > maxLength ? name.substring(0, maxLength) + '...' : name;
+                return label.length > maxLength ? label.substring(0, maxLength) + '...' : label;
             })
             .style('fill-opacity', 1e-6)
             .style('font-size', d => d.depth === 0 ? '14px' : '12px')
