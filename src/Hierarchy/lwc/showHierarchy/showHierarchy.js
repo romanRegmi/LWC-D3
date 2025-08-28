@@ -113,7 +113,7 @@ export default class ShowHierarchy extends LightningElement {
             .attr('transform', `translate(${margin.left},${margin.top})`);
 
         // Create tree layout with dynamic sizing
-        d3.tree().size([calculatedHeight, width]);
+        d3.tree().size([calculatedHeight, this.width]);
 
         // Convert hierarchy data to d3 hierarchy
         this.root = d3.hierarchy(this.hierarchyData, d => d.children);
@@ -380,7 +380,11 @@ export default class ShowHierarchy extends LightningElement {
 
         const svgElement = this.template.querySelector('svg');
         if (svgElement) {
-            return new XMLSerializer().serializeToString(svgElement);
+            try{
+                return new XMLSerializer().serializeToString(svgElement);
+            } catch (error) {
+                console.log(error);
+            }
         }
         return null;
     }
