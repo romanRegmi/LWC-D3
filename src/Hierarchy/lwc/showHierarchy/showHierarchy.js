@@ -68,7 +68,6 @@ export default class ShowHierarchy extends LightningElement {
                 maxLevels: this.maxLevels
             });
             this.hierarchyData = result;
-            // No need to process data - Apex now handles the object grouping
         } catch (error) {
             console.error(error.message);
         } finally {
@@ -158,7 +157,6 @@ export default class ShowHierarchy extends LightningElement {
 
     update(source, g) {
         const visibleNodeCount = this.countVisibleNodes(this.root);
-        const newHeight = this.height + visibleNodeCount * this.minNodeSpacing;
         // Update tree layout size if height changed significantly
         const calculatedHeight = this.height + visibleNodeCount * this.minNodeSpacing; 
         const treeLayout = d3.tree().size([calculatedHeight, this.width])
