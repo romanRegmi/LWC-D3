@@ -11,7 +11,7 @@
 The D3.js tree hierarchy chart in a Salesforce LWC displays a visual representation of a parent-child relationship. The component is added to an object's record detail page. Each child record of the record the component is on is displayed as a circular, clickable node. When a node is clicked, the user is redirected to the record that the clicked node represents.
 
 <p align="center">
-  <img alt="timeline app builder" src="images/appDemo.gif">
+  <img alt="Hierarchy" src="images/appDemo.gif">
 </p>
 
 
@@ -82,3 +82,4 @@ To support a custom object `Project__c` with a child object `Assignment__c` (via
     new ChildRelationship('Assignment__c', 'ProjectId__c')
     });
     ```
+
